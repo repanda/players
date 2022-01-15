@@ -9,12 +9,11 @@ class Player {
     }
 
     public Message sendMessageTo(Player receiver, String message) {
-
-        return new Message("Hi,1");
+        return new Message(message, 1);
     }
 
     public Message reply(Player initiator, Message message) {
 
-        return new Message("Hi,1,1");
+        return new Message(message.getContent(), 1);
     }
 }

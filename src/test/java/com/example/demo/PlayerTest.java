@@ -15,10 +15,10 @@ public class PlayerTest {
         Player initiator = new Player("initiator");
         Player receiver = new Player("receiver");
 
-        initiator.sendMessageTo(receiver, "Hi");
+        Message message = initiator.sendMessageTo(receiver, "Hi");
 
         // when a player receives a message
-        Message response = initiator.reply(initiator, new Message(""));
+        Message response = initiator.reply(initiator, message);
 
         // it should reply with a message that contains the received message
         // concatenated with the value of a counter holding the number of messages this player already sent.
