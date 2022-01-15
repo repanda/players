@@ -2,7 +2,10 @@ package com.example.demo;
 
 class Player {
 
-    public Player(String initiator) {
+    private final String name;
+
+    public Player(String name) {
+        this.name = name;
     }
 
     public Message sendMessageTo(Player receiver, String message) {
@@ -10,7 +13,8 @@ class Player {
         return new Message("Hi,1");
     }
 
-    public Message reply() {
-        return new Message("");
+    public Message reply(Player initiator, Message message) {
+
+        return new Message("Hi,1,1");
     }
 }

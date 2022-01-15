@@ -18,9 +18,9 @@ public class PlayerTest {
         initiator.sendMessageTo(receiver, "Hi");
 
         // when a player receives a message
-        Message response = receiver.reply();
+        Message response = initiator.reply(initiator, new Message(""));
 
-        //it should reply with a message that contains the received message
+        // it should reply with a message that contains the received message
         // concatenated with the value of a counter holding the number of messages this player already sent.
         assertThat(response.getContent()).isEqualTo("Hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10");
     }
@@ -34,5 +34,18 @@ public class PlayerTest {
         Message message = initiator.sendMessageTo(receiver, "Hi");
 
         assertThat(message.getContent()).isEqualTo("Hi,1");
+    }
+
+    @Test
+    void receiver_should_reply_to_initiator_player() {
+
+        Player initiator = new Player("initiator");
+        Player receiver = new Player("receiver");
+
+        Message message = initiator.sendMessageTo(receiver, "Hi");
+
+        Message reply = receiver.reply(initiator, message);
+
+        assertThat(reply.getContent()).isEqualTo("Hi,1,1");
     }
 }

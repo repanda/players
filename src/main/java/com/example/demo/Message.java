@@ -2,13 +2,13 @@ package com.example.demo;
 
 class Message {
 
-    String value;
+    String payload;
 
-    public Message(String value) {
-        this.value = value;
+    public Message(String payload) {
+        this.payload = payload;
     }
 
     public String getContent() {
-        return value;
+        return payload;
     }
 }
