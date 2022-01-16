@@ -13,4 +13,8 @@ class Message {
     public String getContent() {
         return payload + "," + totalSent;
     }
+
+    public Long getId() {
+        return 0L;
+    }
 }

@@ -10,19 +10,20 @@ class MessageService {
         this.messageRepository = messageRepository;
     }
 
-    public void startConversation() {
+    public Long startConversation() {
         Player initiator = new Player("initiator");
         Player receiver = new Player("receiver");
 
         Message message = initiator.sendMessageTo(receiver, "Hi");
 
-        // when a player receives a message
         Message response = initiator.reply(initiator, message);
 
+        messageRepository.store(response);
+        return response.getId();
     }
 
-    public List<Message> loadMessages() {
-        Message message1 = new Message("Hi", 1);
-        return List.of(message1);
+    public List<Message> loadMessages(long messageId) {
+        List<Message> messages = messageRepository.load(messageId);
+        return messages;
     }
 }

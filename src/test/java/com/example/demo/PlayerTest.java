@@ -14,12 +14,13 @@ public class PlayerTest {
     @Test
     void receiver_should_reply_with_a_message_that_contains_the_received_message_concatenated_with_the_value_of_a_counter_holding_the_number_of_messages_this_player_already_sent() {
 
-        MessageRepository messageRepository = new MessageRepository();
+        MessageRepository messageRepository = new MessageRepository(new InMemoryEventStore());
         MessageService messageService = new MessageService(messageRepository);
 
-        messageService.startConversation();
+        long messageId = messageService.startConversation();
 
-        List<Message> messages = messageService.loadMessages();
+        List<Message> messages = messageService.loadMessages(messageId);
+
         // it should reply with a message that contains the received message
         // concatenated with the value of a counter holding the number of messages this player already sent.
         String consoleResponse = new ConsoleLogger(messages).format();
