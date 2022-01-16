@@ -10,8 +10,8 @@ class InMemoryEventStore implements EventStore {
     private Map<Long, List<Message>> store = new HashMap<>();
 
     @Override
-    public void store(Long messageId, Message message) {
-        store.computeIfAbsent(messageId, id -> new ArrayList<>()).addAll(List.of(message));
+    public void store(Long messageId, List<Message> messages) {
+        store.computeIfAbsent(messageId, id -> new ArrayList<>()).addAll(messages);
     }
 
     @Override

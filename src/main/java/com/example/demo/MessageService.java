@@ -18,8 +18,13 @@ class MessageService {
 
         Message response = initiator.reply(initiator, message);
 
-        messageRepository.store(response);
-        return response.getId();
+        Conversation conversation = new Conversation();
+
+        conversation.addMessage(message);
+        conversation.addMessage(response);
+
+        messageRepository.store(conversation);
+        return conversation.getId();
     }
 
     public List<Message> loadMessages(long messageId) {

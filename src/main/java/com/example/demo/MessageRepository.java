@@ -10,11 +10,12 @@ class MessageRepository {
         this.eventStore = eventStore;
     }
 
-    public void store(Message message) {
-        eventStore.store(message.getId(), message);
+    public void store(Conversation conversation) {
+        eventStore.store(conversation.getId(), conversation.getMessages());
     }
 
-    public List<Message> load(long messageId) {
-       return eventStore.load(messageId);
+    public List<Message> load(long conversationId) {
+        Conversation conversation = new Conversation(conversationId, eventStore.load(conversationId));
+        return conversation.getMessages();
     }
 }
