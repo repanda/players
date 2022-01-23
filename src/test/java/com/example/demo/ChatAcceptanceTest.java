@@ -1,42 +1,44 @@
 package com.example.demo;
 
-import com.example.demo.event.Main;
-import org.assertj.core.api.Assertions;
+import com.example.demo.infrastructure.Main;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ChatAcceptanceTest {
 
 
     @Test
-    public void run() {
-        ApplicationLogger logger = new ApplicationLogger();
+    public void should_send_messages_between_two_players() {
+        FakeLogger logger = new FakeLogger();
         Main console = new Main(logger);
+
         console.run();
 
-        Assertions.assertThat(logger.printAll())
+        assertThat(logger.printAll())
                 .isEqualToIgnoringWhitespace(
                         """ 
-                                player: p1 send message: hi
-                                player: p2 send message: hi,1
-                                player: p1 send message: hi,1,1
-                                player: p2 send message: hi,1,1,2
-                                player: p1 send message: hi,1,1,2,2
-                                player: p2 send message: hi,1,1,2,2,3
-                                player: p1 send message: hi,1,1,2,2,3,3
-                                player: p2 send message: hi,1,1,2,2,3,3,4
-                                player: p1 send message: hi,1,1,2,2,3,3,4,4
-                                player: p2 send message: hi,1,1,2,2,3,3,4,4,5
-                                player: p1 send message: hi,1,1,2,2,3,3,4,4,5,5
-                                player: p2 send message: hi,1,1,2,2,3,3,4,4,5,5,6
-                                player: p1 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6
-                                player: p2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7
-                                player: p1 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7
-                                player: p2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8
-                                player: p1 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8
-                                player: p2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9
-                                player: p1 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9
-                                player: p2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10
-                                player: p1 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10
+                                player: initiator send message: hi
+                                player: player2 send message: hi,1
+                                player: initiator send message: hi,1,1
+                                player: player2 send message: hi,1,1,2
+                                player: initiator send message: hi,1,1,2,2
+                                player: player2 send message: hi,1,1,2,2,3
+                                player: initiator send message: hi,1,1,2,2,3,3
+                                player: player2 send message: hi,1,1,2,2,3,3,4
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10
                                                                 """
                 );
     }
