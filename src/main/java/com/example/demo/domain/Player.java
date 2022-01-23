@@ -1,23 +1,23 @@
 package com.example.demo.domain;
 
 
+import com.example.demo.domain.api.Logger;
 import com.example.demo.domain.events.Message;
 
 import java.util.Objects;
 
 public class Player {
 
-    private final Conversation conversation;
+    private Conversation conversation;
     private final String name;
 
     public Player(String name) {
         this.name = name;
-        conversation = null;
     }
 
-    public Player(Conversation conversation, String name) {
-        this.conversation = conversation;
+    public Player(String name, Logger logger) {
         this.name = name;
+        this.conversation = new Conversation(logger, name);
     }
 
     public String getName() {
@@ -26,7 +26,11 @@ public class Player {
 
     public Message startConversation(String startMessage, Conversation conversation) {
         conversation.sendMessage(startMessage);
-        return new Message(startMessage,  1, 1);
+        return new Message(startMessage, 1, 1);
+    }
+
+    public Conversation getConversation() {
+        return conversation;
     }
 
     @Override
