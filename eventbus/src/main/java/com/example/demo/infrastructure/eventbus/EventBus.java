@@ -57,12 +57,11 @@ public class EventBus {
     }
 
     public void register(Object object) {
-        Class<?> currentClass = object.getClass();
-
         /**
          * try to navigate the object tree back to {@link Object} class while
          * checking if there is any @{@link Subscribe} annotated methods
          */
+        Class<?> currentClass = object.getClass();
         while (currentClass != null) {
             List<Method> subscribeMethods = findSubscriptionMethods(currentClass);
 
