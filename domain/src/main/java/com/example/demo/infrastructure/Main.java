@@ -30,7 +30,7 @@ public class Main {
         EventBus bus = new EventBus("chat", isFile, logger);
 
         Player initiator = new Player("initiator", bus);
-        Player receiver = new Player("player2", bus);
+        Player receiver = new Player("khaled", bus);
 
         bus.register(initiator.getConversation());
         bus.register(receiver.getConversation());
@@ -59,7 +59,7 @@ public class Main {
     public void runReceiver() {
         EventBus bus = new EventBus("chat", isFile, logger);
 
-        Player receiver = new Player("player2", bus);
+        Player receiver = new Player("khaled", bus);
 
         bus.register(receiver.getConversation());
         while (true) {

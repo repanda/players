@@ -7,8 +7,6 @@ import java.lang.reflect.Method;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
@@ -33,7 +31,6 @@ public class EventBus {
         if (isFile) {
             watch();
         }
-        startBus();
     }
 
     public void post(Object object) {
@@ -50,10 +47,7 @@ public class EventBus {
         if (containsKey) {
             Message message = (Message) object;
 
-            String value = String.format("player: %s send message: %s", message.getSender(), message.getPayload());
-
-            System.out.println(value); // TODO delete
-            logger.log(value);
+            logger.log(String.format("player: %s send message: %s", message.getSender(), message.getPayload()));
 
             Set<Invocation> invocations = this.invocations.get(clazz);
             for (Invocation invocation : invocations) {
@@ -128,17 +122,11 @@ public class EventBus {
         return invocations;
     }
 
-    public String getName() {
-        return name;
-    }
-
-
     public static final String DATA_FOLDER = "./";
     static final Path EVENTS_PATH = Paths.get(DATA_FOLDER + "chat");
 
     private void publishToFile(Message message) {
         try {
-            System.out.println("dispatchFromFile message = " + message);
             String value = message.getSender() + ":" + message.getPayload();
             Files.write(EVENTS_PATH, Collections.singleton(value));
         } catch (IOException e) {
@@ -146,54 +134,43 @@ public class EventBus {
         }
     }
 
-
-    public void startBus() {
-        System.out.println("## startBus");
-        executor.execute(() -> {
-            while (true) {
-
-                try {
-                    Thread.sleep(5000L);
-                } catch (InterruptedException ignored) {
-                }
+    private void watch() {
+        new Thread(() -> {
+            try {
+                monitor();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
-
+        }).start();
     }
 
-    ExecutorService executor = Executors.newFixedThreadPool(1);
+    private void monitor() {
+        System.out.println("## start file event watcher");
+        WatchService watchService = null;
+        try {
+            watchService = FileSystems.getDefault().newWatchService();
+            Files.createDirectories(Paths.get(DATA_FOLDER));
 
-    private void watch() {
-        executor.execute(() -> {
-            System.out.println("start InMemoryEventBus.watch");
-            WatchService watchService = null;
+            Path path = Paths.get(DATA_FOLDER);
+            path.register(watchService, ENTRY_MODIFY);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        boolean poll = true;
+        while (poll) {
+            WatchKey key = null;
             try {
-                watchService = FileSystems.getDefault().newWatchService();
-                Files.createDirectories(Paths.get(DATA_FOLDER));
-
-                Path path = Paths.get(DATA_FOLDER);
-                path.register(watchService, ENTRY_MODIFY);
-            } catch (IOException e) {
+                key = watchService.take();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            boolean poll = true;
-            while (poll) {
-                WatchKey key = null;
-                try {
-                    key = watchService.take();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                for (WatchEvent<?> event : key.pollEvents()) {
-                    System.out.println("Event kind : " + event.kind() + " - File : " + event.context());
-                    read(event);
-                }
-                poll = key.reset();
+            for (WatchEvent<?> event : key.pollEvents()) {
+                read(event);
             }
-        });
-
+            poll = key.reset();
+        }
     }
 
     private void read(WatchEvent<?> path) {
@@ -201,13 +178,11 @@ public class EventBus {
             String file = path.context().toString();
             if ("chat".equals(file)) {
                 List<String> allLines = Files.readAllLines(EVENTS_PATH);
-                System.out.println("allLines.size() = " + allLines.size());
                 for (String line : allLines) {
-                    System.out.println(line);
                     String sender = line.split(":")[0];
                     String payload = line.split(":")[1];
-                    Message message = new Message(sender, payload, 0, "");
 
+                    Message message = new Message(sender, payload, 0, "");
                     dispatch(message);
                 }
             }
