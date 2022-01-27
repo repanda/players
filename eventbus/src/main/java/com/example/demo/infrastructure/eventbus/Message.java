@@ -17,7 +17,15 @@ public class Message {
     }
 
     public String getContent() {
-        return payload + "," + totalSent;
+        return "";
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public String getPayload() {
+        return payload;
     }
 
     public Long getId() {

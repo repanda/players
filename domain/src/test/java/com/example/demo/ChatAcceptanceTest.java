@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ChatAcceptanceTest {
 
-
     @Test
     public void should_send_messages_between_two_players() {
         FakeLogger logger = new FakeLogger();
@@ -20,27 +19,26 @@ class ChatAcceptanceTest {
         assertThat(logger.printAll())
                 .isEqualToIgnoringWhitespace(
                         """ 
-                                player: initiator send message: hi
-                                player: player2 send message: hi,1
-                                player: initiator send message: hi,1,1
-                                player: player2 send message: hi,1,1,2
-                                player: initiator send message: hi,1,1,2,2
-                                player: player2 send message: hi,1,1,2,2,3
-                                player: initiator send message: hi,1,1,2,2,3,3
-                                player: player2 send message: hi,1,1,2,2,3,3,4
-                                player: initiator send message: hi,1,1,2,2,3,3,4,4
-                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5
-                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5
-                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6
-                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6
-                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7
-                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7
-                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8
-                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8
-                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9
-                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9
-                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10
-                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10
+                                player: initiator send message: hi,1
+                                player: player2 send message: hi,1,1
+                                player: initiator send message: hi,1,1,2
+                                player: player2 send message: hi,1,1,2,2
+                                player: initiator send message: hi,1,1,2,2,3
+                                player: player2 send message: hi,1,1,2,2,3,3
+                                player: initiator send message: hi,1,1,2,2,3,3,4
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9
+                                player: initiator send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10
+                                player: player2 send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10
                                                                 """
                 );
     }
@@ -56,7 +54,7 @@ class ChatAcceptanceTest {
     @Test
     public void receiver() {
         Logger logger = new SystemOutLogger();
-        Main console = new Main(logger,true);
+        Main console = new Main(logger, true);
 
         console.runReceiver();
     }

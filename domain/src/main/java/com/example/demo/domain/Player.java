@@ -1,8 +1,7 @@
 package com.example.demo.domain;
 
 
-import com.example.demo.infrastructure.eventbus.Message;
-import com.example.demo.infrastructure.api.Logger;
+import com.example.demo.infrastructure.eventbus.EventBus;
 
 import java.util.Objects;
 
@@ -11,22 +10,13 @@ public class Player {
     private Conversation conversation;
     private final String name;
 
-    public Player(String name) {
+    public Player(String name, EventBus bus) {
         this.name = name;
+        this.conversation = new Conversation(name, bus);
     }
 
-    public Player(String name, Logger logger) {
-        this.name = name;
-        this.conversation = new Conversation(name);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Message startConversation(String startMessage, Conversation conversation) {
+    public void startConversation(String startMessage, Conversation conversation) {
         conversation.sendMessage(startMessage);
-        return new Message(startMessage, startMessage, 1, conversation.id);//TODO delete
     }
 
     public Conversation getConversation() {

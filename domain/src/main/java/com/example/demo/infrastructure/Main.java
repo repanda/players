@@ -2,7 +2,7 @@ package com.example.demo.infrastructure;
 
 import com.example.demo.domain.Player;
 import com.example.demo.infrastructure.api.Logger;
-import com.example.demo.infrastructure.eventbus.InMemoryEventBus;
+import com.example.demo.infrastructure.eventbus.EventBus;
 import com.example.demo.infrastructure.logger.SystemOutLogger;
 
 /**
@@ -12,56 +12,63 @@ public class Main {
 
 
     private final Logger logger;
-    private final boolean file;
+    private final boolean isFile;
 
-    public Main(Logger logger, boolean file) {
+    public Main(Logger logger, boolean isFile) {
         this.logger = logger;
-        this.file = file;
+        this.isFile = isFile;
     }
 
     public static void main(String[] args) {
-        Main main = new Main(new SystemOutLogger(), true);
+        Main main = new Main(new SystemOutLogger(), false);
         main.run();
 
         System.exit(0);
     }
 
     public void run() {
-        InMemoryEventBus bus = InMemoryEventBus.getInstance()
-                .withLogger(logger);
+        EventBus bus = new EventBus("chat", isFile, logger);
 
-        Player initiator = new Player("initiator", logger);
-        Player receiver = new Player("player2", logger);
+        Player initiator = new Player("initiator", bus);
+        Player receiver = new Player("player2", bus);
 
-        bus.subscribe(initiator.getConversation());
-        bus.subscribe(receiver.getConversation());
+        bus.register(initiator.getConversation());
+        bus.register(receiver.getConversation());
 
         initiator.startConversation("hi", initiator.getConversation());
-        bus.startBus();
     }
 
     public void runInit() {
-        InMemoryEventBus bus = InMemoryEventBus.getInstance()
-                .withFile(true);
+        EventBus bus = new EventBus("chat", isFile, logger);
 
-        Player initiator = new Player("initiator", logger);
+        Player initiator = new Player("initiator", bus);
 
-        bus.subscribe(initiator.getConversation());
+        bus.register(initiator.getConversation());
 
         initiator.startConversation("hi", initiator.getConversation());
-        bus.startBus();
+        while (true) {
+
+            try {
+                Thread.sleep(5000L);
+            } catch (InterruptedException ignored) {
+            }
+        }
 
     }
 
     public void runReceiver() {
-        InMemoryEventBus bus = InMemoryEventBus.getInstance()
-                .withFile(true);
+        EventBus bus = new EventBus("chat", isFile, logger);
 
-        Player receiver = new Player("player2", logger);
+        Player receiver = new Player("player2", bus);
 
-        bus.subscribe(receiver.getConversation());
+        bus.register(receiver.getConversation());
+        while (true) {
 
-        bus.startBus();
+            try {
+                Thread.sleep(5000L);
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 
 }
