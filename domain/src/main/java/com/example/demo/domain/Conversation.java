@@ -24,6 +24,9 @@ public class Conversation {
         this.bus = bus;
     }
 
+    /**
+     * Consume the Message event dispatched by the bus.
+     */
     @Subscribe("chat")
     public void onMessage(Message message) {
         if (this.id.equals(message.sender())) {

@@ -48,7 +48,7 @@ class ChatAcceptanceTest {
         Logger logger = new SystemOutLogger();
         Main console = new Main(logger, true);
 
-        console.runInit();
+        console.runInitiator();
     }
 
     @Test

@@ -11,6 +11,6 @@ class InitiatorTest {
         System.out.println("## initiator test process id = " + ProcessHandle.current().pid());
 
         Main console = new Main(new SystemOutLogger(), true);
-        console.runInit();
+        console.runInitiator();
     }
 }

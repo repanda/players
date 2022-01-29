@@ -38,7 +38,7 @@ public class Main {
         initiator.startConversation("hi", initiator.getConversation());
     }
 
-    public void runInit() {
+    public void runInitiator() {
         EventBus bus = new EventBus("chat", isFile, logger);
 
         Player initiator = new Player("initiator", bus);

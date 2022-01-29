@@ -3,28 +3,29 @@ package com.example.demo.infrastructure.eventbus;
 import com.example.demo.infrastructure.api.Logger;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.nio.file.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 /**
- * Simple implementation demonstrating generally how guava-like EventBus works, without all the
- * additional code of special cases handling and the usage of special guava collections
+ * EventBus allows publish-subscribe communication between components.
+ * It requires components to explicitly register to the bus using {@link #register(Object)} method.
  */
 public class EventBus {
-
-    private Map<Class<?>, Set<Invocation>> invocations = new ConcurrentHashMap<>();
 
     private final String name;
     private final boolean isFile;
     private final Logger logger;
     private WatchService watchService;
+    private final Subscribers subscribers = new Subscribers();
 
+    /**
+     * Creates a new EventBus instance.
+     */
     public EventBus(String name, boolean isFile, Logger logger) {
         this.name = name;
         this.isFile = isFile;
@@ -35,96 +36,51 @@ public class EventBus {
         }
     }
 
-    public void post(Object object) {
+    /**
+     * Posts the given event to the event bus. The
+     */
+    public void post(Object event) {
         if (isFile) {
-            publishToFile((Message) object);
+            publishToFile((Message) event);
         } else {
-            dispatch(object);
+            dispatch(event);
         }
     }
 
-    private void dispatch(Object object) {
-        Class<?> clazz = object.getClass();
-        boolean containsKey = invocations.containsKey(clazz);
+    /**
+     * Send the given event object to interested subscribers
+     *
+     * @param event event to send
+     */
+    private void dispatch(Object event) {
+        Class<?> clazz = event.getClass();
+        Map<Class<?>, Set<Invocation>> invocationsMap = subscribers.getInvocations();
+        boolean containsKey = invocationsMap.containsKey(clazz);
         if (containsKey) {
-            Message message = (Message) object;
+            Message message = (Message) event;
 
             logger.log(String.format("player: %s send message: %s", message.sender(), message.payload()));
 
-            Set<Invocation> invocations = this.invocations.get(clazz);
+            Set<Invocation> invocations = invocationsMap.get(clazz);
             for (Invocation invocation : invocations) {
-                invocation.invoke(object);
+                invocation.invoke(event);
             }
         }
     }
 
+    /**
+     * Registers all subscriber methods on {@code object} to receive events.
+     *
+     * @param object the object whose subscriber methods should be registered.
+     */
     public void register(Object object) {
-        /**
-         * try to navigate the object tree back to {@link Object} class while
-         * checking if there is any @{@link Subscribe} annotated methods
-         */
-        Class<?> currentClass = object.getClass();
-        while (currentClass != null) {
-            List<Method> subscribeMethods = findSubscriptionMethods(currentClass);
-
-            for (Method method : subscribeMethods) {
-                // we know for sure that it has only one parameter
-                Class<?> type = method.getParameterTypes()[0];
-                if (invocations.containsKey(type)) {
-                    Set<Invocation> invocations = Stream.concat(
-                            this.invocations.get(type).stream(),
-                            Stream.of(new Invocation(method, object))
-                    ).collect(Collectors.toSet());
-
-                    this.invocations.put(type, invocations);
-                } else {
-                    invocations.put(type, Set.of(new Invocation(method, object)));
-                }
-            }
-            currentClass = currentClass.getSuperclass();
-        }
+        subscribers.register(object);
     }
 
     public void unregister(Object object) {
-        Class<?> currentClass = object.getClass();
-        while (currentClass != null) {
-            List<Method> subscribeMethods = findSubscriptionMethods(currentClass);
-
-            for (Method method : subscribeMethods) {
-                Class<?> type = method.getParameterTypes()[0];
-                if (invocations.containsKey(type)) {
-                    Set<Invocation> invocationsSet = invocations.get(type);
-                    invocationsSet.remove(new Invocation(method, object));
-
-                    if (invocationsSet.isEmpty()) {
-                        invocations.remove(type);
-                    }
-                }
-            }
-            currentClass = currentClass.getSuperclass();
-        }
+        subscribers.unregister(object);
     }
 
-    private List<Method> findSubscriptionMethods(Class<?> type) {
-        List<Method> subscribeMethods = Arrays.stream(type.getDeclaredMethods())
-                .filter(this::isSubscribed)
-                .collect(Collectors.toList());
-        return filterSingleParameterMethods(subscribeMethods);
-    }
-
-    private List<Method> filterSingleParameterMethods(List<Method> subscribeMethods) {
-        return subscribeMethods.stream().filter(method -> method.getParameterCount() == 1)
-                .collect(Collectors.toList());
-    }
-
-    private boolean isSubscribed(Method method) {
-        Subscribe[] subscribes = method.getAnnotationsByType(Subscribe.class);
-        return Arrays.stream(subscribes).anyMatch(subscribe -> this.name.equals(subscribe.value()));
-    }
-
-    public Map<Class<?>, Set<Invocation>> getInvocations() {
-        return invocations;
-    }
 
     public static final String DATA_FOLDER = "./";
     static final Path EVENTS_PATH = Paths.get(DATA_FOLDER + "chat");
