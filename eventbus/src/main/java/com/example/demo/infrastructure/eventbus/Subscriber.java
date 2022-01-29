@@ -10,6 +10,9 @@ import java.lang.reflect.Method;
 record Subscriber(Method handler,
                   Object targetObject) {
 
+    /**
+     * Method for calling subscribed method with reflection
+     */
     public void invoke(Object object) {
         try {
             handler.invoke(targetObject, object);

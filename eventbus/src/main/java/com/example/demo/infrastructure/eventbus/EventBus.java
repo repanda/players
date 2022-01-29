@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
@@ -20,6 +21,7 @@ public class EventBus {
     private final Logger logger;
     private WatchService watchService;
     private final Subscribers subscribers = new Subscribers();
+    private Dispatcher dispatcher = new BroadcastDispatcher();
 
     /**
      * Creates a new EventBus instance.
@@ -54,8 +56,8 @@ public class EventBus {
         Message message = (Message) event;
         logger.log(String.format("player: %s send message: %s", message.sender(), message.payload()));
 
-        subscribers.getSubscribers(event)
-                .forEach(subscriber -> subscriber.invoke(event));
+        Set<Subscriber> subscribers = this.subscribers.getSubscribers(event);
+        dispatcher.dispatch(event, subscribers);
     }
 
     /**
