@@ -2,7 +2,7 @@ package com.example.demo.infrastructure.eventbus;
 
 import java.util.Set;
 
-class BroadcastDispatcher implements Dispatcher {
+public class BroadcastDispatcher implements Dispatcher {
 
     /**
      * dispatches events to subscribers immediately in the same JAVA process.

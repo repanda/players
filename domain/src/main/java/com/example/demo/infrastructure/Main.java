@@ -2,7 +2,9 @@ package com.example.demo.infrastructure;
 
 import com.example.demo.domain.Player;
 import com.example.demo.infrastructure.api.Logger;
+import com.example.demo.infrastructure.eventbus.BroadcastDispatcher;
 import com.example.demo.infrastructure.eventbus.EventBus;
+import com.example.demo.infrastructure.eventbus.PollDispatcher;
 import com.example.demo.infrastructure.logger.SystemOutLogger;
 
 /**
@@ -27,7 +29,7 @@ public class Main {
     }
 
     public void run() {
-        EventBus bus = new EventBus("chat", isFile, logger);
+        EventBus bus = new EventBus(logger, new BroadcastDispatcher());
 
         Player initiator = new Player("initiator", bus);
         Player receiver = new Player("khaled", bus);
@@ -39,7 +41,7 @@ public class Main {
     }
 
     public void runInitiator() {
-        EventBus bus = new EventBus("chat", isFile, logger);
+        EventBus bus = new EventBus(logger, new PollDispatcher());
 
         Player initiator = new Player("initiator", bus);
 
@@ -57,7 +59,7 @@ public class Main {
     }
 
     public void runReceiver() {
-        EventBus bus = new EventBus("chat", isFile, logger);
+        EventBus bus = new EventBus(logger, new PollDispatcher());
 
         Player receiver = new Player("khaled", bus);
 
