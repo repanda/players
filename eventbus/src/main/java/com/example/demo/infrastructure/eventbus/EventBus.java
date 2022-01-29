@@ -8,6 +8,7 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
@@ -22,6 +23,7 @@ public class EventBus {
     private final String name;
     private final boolean isFile;
     private final Logger logger;
+    private WatchService watchService;
 
     public EventBus(String name, boolean isFile, Logger logger) {
         this.name = name;
@@ -69,11 +71,14 @@ public class EventBus {
                 // we know for sure that it has only one parameter
                 Class<?> type = method.getParameterTypes()[0];
                 if (invocations.containsKey(type)) {
-                    invocations.get(type).add(new Invocation(method, object));
+                    Set<Invocation> invocations = Stream.concat(
+                            this.invocations.get(type).stream(),
+                            Stream.of(new Invocation(method, object))
+                    ).collect(Collectors.toSet());
+
+                    this.invocations.put(type, invocations);
                 } else {
-                    Set<Invocation> temp = new HashSet<>();
-                    temp.add(new Invocation(method, object));
-                    invocations.put(type, temp);
+                    invocations.put(type, Set.of(new Invocation(method, object)));
                 }
             }
             currentClass = currentClass.getSuperclass();
@@ -145,34 +150,32 @@ public class EventBus {
 
     private void monitor() {
         System.out.println("## start file event watcher");
-        WatchService watchService = null;
-        try {
-            watchService = FileSystems.getDefault().newWatchService();
+        try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
+            this.watchService = FileSystems.getDefault().newWatchService();
             Files.createDirectories(Paths.get(DATA_FOLDER));
 
             Path path = Paths.get(DATA_FOLDER);
             path.register(watchService, ENTRY_MODIFY);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            boolean poll = true;
+            while (poll) {
+                poll = pollEvents(watchService);
+            }
+        } catch (IOException | InterruptedException | ClosedWatchServiceException e) {
+            Thread.currentThread().interrupt();
         }
 
-        boolean poll = true;
-        while (poll) {
-            WatchKey key = null;
-            try {
-                key = watchService.take();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            for (WatchEvent<?> event : key.pollEvents()) {
-                read(event);
-            }
-            poll = key.reset();
-        }
     }
 
-    private void read(WatchEvent<?> path) {
+    private boolean pollEvents(WatchService watchService) throws InterruptedException {
+        WatchKey key = watchService.take();
+        for (WatchEvent<?> event : key.pollEvents()) {
+            notify(event);
+        }
+        return key.reset();
+    }
+
+    private void notify(WatchEvent<?> path) {
         try {
             String file = path.context().toString();
             if ("chat".equals(file)) {
