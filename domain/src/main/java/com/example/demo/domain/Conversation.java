@@ -26,18 +26,17 @@ public class Conversation {
 
     @Subscribe("chat")
     public void onMessage(Message message) {
-        if (this.id.equals(message.getSender())) {
+        if (this.id.equals(message.sender())) {
             return;
         }
         receivedCounter.incrementAndGet();
 
-        try {
+        try { // juste for demo purpose
             Thread.sleep(100L);
         } catch (InterruptedException ignored) {
-            ignored.printStackTrace();
         }
 
-        sendMessage(message.getPayload());
+        sendMessage(message.payload());
     }
 
     public void sendMessage(String content) {
@@ -49,7 +48,7 @@ public class Conversation {
         }
         String newMessage = content + "," + sentCounter.incrementAndGet();
 
-        bus.post(new Message(id, newMessage, sentCounter.get(), id));
+        bus.post(new Message(id, newMessage));
     }
 
     @Override

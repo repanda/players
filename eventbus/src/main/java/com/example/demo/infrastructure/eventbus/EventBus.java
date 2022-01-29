@@ -49,7 +49,7 @@ public class EventBus {
         if (containsKey) {
             Message message = (Message) object;
 
-            logger.log(String.format("player: %s send message: %s", message.getSender(), message.getPayload()));
+            logger.log(String.format("player: %s send message: %s", message.sender(), message.payload()));
 
             Set<Invocation> invocations = this.invocations.get(clazz);
             for (Invocation invocation : invocations) {
@@ -131,7 +131,7 @@ public class EventBus {
 
     private void publishToFile(Message message) {
         try {
-            String value = message.getSender() + ":" + message.getPayload();
+            String value = message.sender() + ":" + message.payload();
             Files.write(EVENTS_PATH, Collections.singleton(value));
         } catch (IOException e) {
             e.printStackTrace();
@@ -184,7 +184,7 @@ public class EventBus {
                     String sender = line.split(":")[0];
                     String payload = line.split(":")[1];
 
-                    Message message = new Message(sender, payload, 0, "");
+                    Message message = new Message(sender, payload);
                     dispatch(message);
                 }
             }
