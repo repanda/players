@@ -9,41 +9,52 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.unmodifiableSet;
+import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
+
+/**
+ * Subscriber methods associated with this EventBus instance
+ */
 class Subscribers {
 
     /**
-     * Store all the subscribers associated with this EventBus instance
+     * Store all subscribers methods
      */
-    private Map<Class<?>, Set<Invocation>> invocations = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Set<Subscriber>> subscribers = new ConcurrentHashMap<>();
 
+
+    /**
+     * Registers all subscriber methods on {@code object} to receive events.
+     *
+     * @param object the object whose subscriber methods should be registered.
+     */
     public void register(Object object) {
 
-        /**
-         * try to navigate the object tree back to {@link Object} class while
-         * checking if there is any @{@link Subscribe} annotated methods
-         */
         Class<?> currentClass = object.getClass();
-        while (currentClass != null) {
-            List<Method> subscribeMethods = findSubscriptionMethods(currentClass);
+        List<Method> subscribeMethods = findSubscriptionMethods(currentClass);
 
-            for (Method method : subscribeMethods) {
-                // we know for sure that it has only one parameter
-                Class<?> type = method.getParameterTypes()[0];
-                if (invocations.containsKey(type)) {
-                    Set<Invocation> invocations = Stream.concat(
-                            this.invocations.get(type).stream(),
-                            Stream.of(new Invocation(method, object))
-                    ).collect(Collectors.toSet());
+        for (Method method : subscribeMethods) {
+            // we know for sure that it has only one parameter
+            Class<?> type = method.getParameterTypes()[0];
+            if (subscribers.containsKey(type)) {
+                Set<Subscriber> subscribers = Stream.concat(
+                        this.subscribers.get(type).stream(),
+                        Stream.of(new Subscriber(method, object))
+                ).collect(Collectors.toSet());
 
-                    this.invocations.put(type, invocations);
-                } else {
-                    invocations.put(type, Set.of(new Invocation(method, object)));
-                }
+                this.subscribers.put(type, subscribers);
+            } else {
+                subscribers.put(type, Set.of(new Subscriber(method, object)));
             }
-            currentClass = currentClass.getSuperclass();
         }
     }
 
+    /**
+     * Unregisters all subscriber methods on a registered {@code object}.
+     *
+     * @param object object whose subscriber methods should be unregistered.
+     */
     public void unregister(Object object) {
         Class<?> currentClass = object.getClass();
         while (currentClass != null) {
@@ -51,12 +62,12 @@ class Subscribers {
 
             for (Method method : subscribeMethods) {
                 Class<?> type = method.getParameterTypes()[0];
-                if (invocations.containsKey(type)) {
-                    Set<Invocation> invocationsSet = invocations.get(type);
-                    invocationsSet.remove(new Invocation(method, object));
+                if (subscribers.containsKey(type)) {
+                    Set<Subscriber> invocationsSet = subscribers.get(type);
+                    invocationsSet.remove(new Subscriber(method, object));
 
                     if (invocationsSet.isEmpty()) {
-                        invocations.remove(type);
+                        subscribers.remove(type);
                     }
                 }
             }
@@ -64,6 +75,9 @@ class Subscribers {
         }
     }
 
+    /**
+     * check if there is any @{@link Subscribe} annotated methods
+     */
     private List<Method> findSubscriptionMethods(Class<?> type) {
         List<Method> subscribeMethods = Arrays.stream(type.getDeclaredMethods())
                 .filter(this::isSubscribed)
@@ -77,13 +91,18 @@ class Subscribers {
     }
 
     private boolean isSubscribed(Method method) {
-        Subscribe[] subscribes = method.getAnnotationsByType(Subscribe.class);
-        return subscribes.length > 0;
+        return nonNull(method.getAnnotation(Subscribe.class));
     }
 
+    /**
+     * Gets a set of subscribers representing an immutable snapshot of all subscribers to the given event at
+     * the time this method is called.
+     */
+    public Set<Subscriber> getSubscribers(Object event) {
+        Class<?> clazz = requireNonNull(event.getClass());
 
-    public Map<Class<?>, Set<Invocation>> getInvocations() {
-        return invocations;
+        return subscribers.containsKey(event.getClass()) ?
+                unmodifiableSet(subscribers.get(clazz)) :
+                Set.of();
     }
-
 }

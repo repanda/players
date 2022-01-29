@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
@@ -53,19 +51,11 @@ public class EventBus {
      * @param event event to send
      */
     private void dispatch(Object event) {
-        Class<?> clazz = event.getClass();
-        Map<Class<?>, Set<Invocation>> invocationsMap = subscribers.getInvocations();
-        boolean containsKey = invocationsMap.containsKey(clazz);
-        if (containsKey) {
-            Message message = (Message) event;
+        Message message = (Message) event;
+        logger.log(String.format("player: %s send message: %s", message.sender(), message.payload()));
 
-            logger.log(String.format("player: %s send message: %s", message.sender(), message.payload()));
-
-            Set<Invocation> invocations = invocationsMap.get(clazz);
-            for (Invocation invocation : invocations) {
-                invocation.invoke(event);
-            }
-        }
+        subscribers.getSubscribers(event)
+                .forEach(subscriber -> subscriber.invoke(event));
     }
 
     /**
@@ -77,6 +67,11 @@ public class EventBus {
         subscribers.register(object);
     }
 
+    /**
+     * Unregisters all subscriber methods on a registered {@code object}.
+     *
+     * @param object object whose subscriber methods should be unregistered.
+     */
     public void unregister(Object object) {
         subscribers.unregister(object);
     }
