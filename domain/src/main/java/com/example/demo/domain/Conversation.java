@@ -31,11 +31,10 @@ public class Conversation {
         if (this.id.equals(message.sender())) {
             return;
         }
-        System.out.println(String.format("## player: %s receive message from %s: %s", this.id, message.sender(), message.payload()));
         receivedCounter.incrementAndGet();
 
-        try { // juste for demo purpose
-            Thread.sleep(1L);
+        try { // just for demo purpose
+            Thread.sleep(10L);
         } catch (InterruptedException ignored) {
         }
 
@@ -47,6 +46,7 @@ public class Conversation {
         String newMessage = content + "," + sentCounter.incrementAndGet();
         bus.post(new Message(id, newMessage));
 
+        //unregister after this receiver sent 10 messages
         if (sentCounter.get() >= MAX_SENT_MESSAGES) {
             bus.unregister(this);
         }

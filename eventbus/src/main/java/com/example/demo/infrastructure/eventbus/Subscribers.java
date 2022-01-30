@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.nonNull;
@@ -23,6 +22,9 @@ class Subscribers {
 
     /**
      * Store all subscribers methods
+     * The {@link CopyOnWriteArraySet} values make it easy and relatively lightweight to get an
+     * immutable snapshot of all current subscribers to an event without any locking.
+     * We use it to avoid concurrent modification
      */
     private final Map<Class<?>, CopyOnWriteArraySet<Subscriber>> subscribers = new ConcurrentHashMap<>();
 
@@ -41,15 +43,9 @@ class Subscribers {
             // we know for sure that it has only one parameter
             Class<?> type = method.getParameterTypes()[0];
             if (subscribers.containsKey(type)) {
-                Set<Subscriber> subscribers = Stream.concat(
-                        this.subscribers.get(type).stream(),
-                        Stream.of(new Subscriber(method, object))
-                ).collect(Collectors.toSet());
-
                 this.subscribers.get(type).add(new Subscriber(method, object));
-                //this.subscribers.put(type, );
             } else {
-                subscribers.put(type, new CopyOnWriteArraySet<Subscriber>(Set.of(new Subscriber(method, object))));
+                subscribers.put(type, new CopyOnWriteArraySet<>(Set.of(new Subscriber(method, object))));
             }
         }
     }
@@ -77,7 +73,6 @@ class Subscribers {
             }
             currentClass = currentClass.getSuperclass();
         }
-        System.out.println("Subscribers.unregister");
     }
 
     /**

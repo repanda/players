@@ -7,8 +7,8 @@ import java.util.Objects;
 
 public class Player {
 
-    private Conversation conversation;
     private final String name;
+    private Conversation conversation;
 
     public Player(String name, EventBus bus) {
         this.name = name;
