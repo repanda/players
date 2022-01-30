@@ -4,7 +4,9 @@ package com.example.demo.domain;
 import com.example.demo.api.EventBus;
 import com.example.demo.api.Subscribe;
 
-
+/**
+ * Initiator Conversation of an initiator player, it allows a player to send and receive messages
+ */
 public class InitiatorConversation extends Conversation {
 
     private static final int MAX_RECEIVED_MESSAGES = 10;
@@ -15,8 +17,9 @@ public class InitiatorConversation extends Conversation {
 
     /**
      * Consume the Message event dispatched by the bus.
+     * Stop after this initiator sent 10 messages and received back 10 messages
      */
-    @Subscribe("chat")
+    @Subscribe
     public void onMessage(Message message) {
         if (this.id.equals(message.sender())) {
             return;
@@ -38,6 +41,9 @@ public class InitiatorConversation extends Conversation {
         sendMessage(message.payload());
     }
 
+    /**
+     * sends the message content to the bus
+     */
     public void sendMessage(String content) {
 
         String newMessage = content + "," + sentCounter.incrementAndGet();

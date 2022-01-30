@@ -16,7 +16,6 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
  * Polls events stored in an event log file {@code CHAT_FILE} and notify all subscribers.
  * This is used in inner process communication
  */
-
 public class PollDispatcher implements Runnable, Dispatcher {
 
     private final String EVENT_FOLDER = "./";
@@ -79,7 +78,7 @@ public class PollDispatcher implements Runnable, Dispatcher {
     }
 
     /**
-     * read the event log file and notify subscribers
+     * Read the event log file and notify subscribers
      */
     private void notifySubscribers(WatchEvent<?> path) {
         try {
@@ -94,7 +93,7 @@ public class PollDispatcher implements Runnable, Dispatcher {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erreur reading event from chat file", e);
         }
     }
 
@@ -107,7 +106,7 @@ public class PollDispatcher implements Runnable, Dispatcher {
             String value = ((Message) event).sender() + ":" + ((Message) event).payload();
             Files.write(EVENTS_PATH, Collections.singleton(value));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erreur writing event to chat file", e);
         }
     }
 

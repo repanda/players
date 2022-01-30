@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 
@@ -102,7 +101,7 @@ class Subscribers {
         Class<?> clazz = requireNonNull(event.getClass());
 
         return subscribers.containsKey(event.getClass()) ?
-                unmodifiableSet(subscribers.get(clazz)) :
+                subscribers.get(clazz) :
                 Set.of();
     }
 

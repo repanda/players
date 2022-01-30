@@ -7,7 +7,9 @@ import com.example.demo.api.Subscribe;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
+/**
+ * Conversation of a player, it allows a player to send and receive messages
+ */
 public class Conversation {
 
     protected static final int MAX_SENT_MESSAGES = 10;
@@ -26,7 +28,7 @@ public class Conversation {
     /**
      * Consume the Message event dispatched by the bus.
      */
-    @Subscribe("chat")
+    @Subscribe
     public void onMessage(Message message) {
         if (this.id.equals(message.sender())) {
             return;
@@ -41,6 +43,10 @@ public class Conversation {
         sendMessage(message.payload());
     }
 
+    /**
+     * sends the message content to the bus.
+     * Stop after a non-initiator player sent 10 messages
+     */
     public void sendMessage(String content) {
 
         String newMessage = content + "," + sentCounter.incrementAndGet();

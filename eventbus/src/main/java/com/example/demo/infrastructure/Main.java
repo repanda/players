@@ -10,6 +10,8 @@ import com.example.demo.infrastructure.eventbus.SimpleEventBus;
 import com.example.demo.infrastructure.logger.Logger;
 import com.example.demo.infrastructure.logger.SystemOutLogger;
 
+import static com.example.demo.domain.Player.PlayerBuilder;
+
 /**
  * Main class
  */
@@ -35,8 +37,8 @@ public class Main {
         Dispatcher broadcastDispatcher = new BroadcastDispatcher();
         EventBus bus = new SimpleEventBus(logger, broadcastDispatcher);
 
-        Player initiator = new Player("initiator", bus, true);
-        Player receiver = new Player("khaled", bus);
+        Player initiator = new PlayerBuilder().name("initiator").bus(bus).initiator().createPlayer();
+        Player receiver = new PlayerBuilder().name("khaled").bus(bus).createPlayer();
 
         bus.register(initiator.getConversation());
         bus.register(receiver.getConversation());
@@ -48,7 +50,7 @@ public class Main {
         Dispatcher pollDispatcher = new PollDispatcher();
         SimpleEventBus bus = new SimpleEventBus(logger, pollDispatcher);
 
-        Player initiator = new Player("initiator", bus, true);
+        Player initiator = new PlayerBuilder().name("initiator").bus(bus).initiator().createPlayer();
 
         bus.register(initiator.getConversation());
 
@@ -61,7 +63,8 @@ public class Main {
         PollDispatcher pollDispatcher = new PollDispatcher();
         SimpleEventBus bus = new SimpleEventBus(logger, pollDispatcher);
 
-        Player receiver = new Player("khaled", bus);
+        Player receiver = new PlayerBuilder()
+                .name("khaled").bus(bus).createPlayer();
 
         bus.register(receiver.getConversation());
 
