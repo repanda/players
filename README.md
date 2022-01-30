@@ -1,7 +1,7 @@
 # Players
 Given a Player class - an instance of which can communicate with other Players.
 
-The requirements are as follows:
+# The requirements are as follows:
 
 1. create 2 Player instances
 2. one of the players should send a message to second player (let's call this player "initiator")
@@ -15,4 +15,25 @@ Please use core Java as much as possible without additional frameworks like Spri
 Please include a maven project with the source code to build the jar and a shell script to start the program.
 Everything not specified is to be decided by you; everything specified is a hard requirement.
 
-You should send your source code as an archive attached to the e-mail; inline links for downloading will be ignored.
+# Requirements
+- Maven 3 (using mvn 3.8.1 version)
+- Java 17 (using jdk-17.0.1)
+
+# Build
+Compile the Application using build.bat or execute.
+
+mvn clean install
+
+# Run
+To run the application in the same process please use the file run.bat file or execute 
+
+java -jar .\eventbus\target\eventbus-0.0.2-jar-with-dependencies.jar
+
+
+To run every player running in a different JAVA process please run the file receiver.bat then initiator.bat or execute
+
+java -jar .\eventbus\target\eventbus-0.0.2-jar-with-dependencies.jar [khaled]
+
+java -jar .\eventbus\target\eventbus-0.0.2-jar-with-dependencies.jar initiator
+
+NB: the initiator name should be initiator
