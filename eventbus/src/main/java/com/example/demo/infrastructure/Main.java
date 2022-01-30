@@ -19,18 +19,29 @@ public class Main {
 
 
     private final Logger logger;
-    private final boolean isFile;
 
-    public Main(Logger logger, boolean isFile) {
+    public Main(Logger logger) {
         this.logger = logger;
-        this.isFile = isFile;
     }
 
     public static void main(String[] args) {
-        Main main = new Main(new SystemOutLogger(), false);
+        Main main = createMainApplication(args);
         main.run();
 
-        System.exit(0);
+    }
+
+    private static Main createMainApplication(String[] args) {
+        SystemOutLogger logger = new SystemOutLogger();
+        if (args.length == 0) {
+            return new Main(logger);
+        }
+
+        String playerName = args[0];
+        if ("initiator".equalsIgnoreCase(playerName)) {
+            return new MainInitiator(logger);
+        } else {
+            return new MainReceiver(logger, playerName);
+        }
     }
 
     public void run() {
@@ -46,32 +57,7 @@ public class Main {
         initiator.startConversation("hi", initiator.getConversation());
     }
 
-    public void runInitiator() {
-        Dispatcher pollDispatcher = new PollDispatcher();
-        SimpleEventBus bus = new SimpleEventBus(logger, pollDispatcher);
-
-        Player initiator = new PlayerBuilder().name("initiator").bus(bus).initiator().createPlayer();
-
-        bus.register(initiator.getConversation());
-
-        initiator.startConversation("hi", initiator.getConversation());
-
-        startBus(bus);
-    }
-
-    public void runReceiver() {
-        PollDispatcher pollDispatcher = new PollDispatcher();
-        SimpleEventBus bus = new SimpleEventBus(logger, pollDispatcher);
-
-        Player receiver = new PlayerBuilder()
-                .name("khaled").bus(bus).createPlayer();
-
-        bus.register(receiver.getConversation());
-
-        startBus(bus);
-    }
-
-    private void startBus(SimpleEventBus bus) {
+    void startBus(SimpleEventBus bus) {
         while (true) {
             if (bus.isEmpty()) {
                 System.out.println("finalize the program gracefully");
@@ -82,6 +68,54 @@ public class Main {
                 Thread.sleep(1000L);
             } catch (InterruptedException ignored) {
             }
+        }
+    }
+
+    private static class MainInitiator extends Main {
+        private final String playerName;
+
+        public MainInitiator(Logger logger) {
+            super(logger);
+            this.playerName = "initiator";
+        }
+
+        public void run() {
+
+            super.logger.log(String.format("Player %s has joined the chat", playerName));
+
+            Dispatcher pollDispatcher = new PollDispatcher();
+            SimpleEventBus bus = new SimpleEventBus(super.logger, pollDispatcher);
+
+            Player initiator = new PlayerBuilder().name(playerName).bus(bus).initiator().createPlayer();
+
+            bus.register(initiator.getConversation());
+
+            initiator.startConversation("hi", initiator.getConversation());
+
+            startBus(bus);
+        }
+    }
+
+    private static class MainReceiver extends Main {
+        private final String playerName;
+
+        public MainReceiver(SystemOutLogger logger, String playerName) {
+            super(logger);
+            this.playerName = playerName;
+        }
+
+        public void run() {
+            super.logger.log(String.format("Player %s has joined the chat", playerName));
+
+            PollDispatcher pollDispatcher = new PollDispatcher();
+            SimpleEventBus bus = new SimpleEventBus(super.logger, pollDispatcher);
+
+            Player receiver = new PlayerBuilder()
+                    .name(playerName).bus(bus).createPlayer();
+
+            bus.register(receiver.getConversation());
+
+            startBus(bus);
         }
     }
 }

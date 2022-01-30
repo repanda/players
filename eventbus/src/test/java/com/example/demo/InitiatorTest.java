@@ -10,7 +10,7 @@ class InitiatorTest {
     public void runTest() {
         System.out.println("## initiator test process id = " + ProcessHandle.current().pid());
 
-        Main console = new Main(new SystemOutLogger(), true);
-        console.runInitiator();
+        Main console = new Main(new SystemOutLogger());
+        console.run();
     }
 }

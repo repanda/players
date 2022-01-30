@@ -10,7 +10,7 @@ class ReceiverTest {
     public void runTest() {
         System.out.println("## receiver test process id = " + ProcessHandle.current().pid());
 
-        Main console = new Main(new SystemOutLogger(), true);
-        console.runReceiver();
+        Main console = new Main(new SystemOutLogger());
+        console.run();
     }
 }

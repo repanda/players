@@ -10,7 +10,7 @@ class ChatAcceptanceTest {
     @Test
     public void should_send_messages_between_two_players() {
         FakeLogger logger = new FakeLogger();
-        Main console = new Main(logger, false);
+        Main console = new Main(logger);
 
         console.run();
 
