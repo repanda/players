@@ -35,6 +35,7 @@ public class SimpleEventBus implements EventBus {
     public void post(Object event) {
         Message message = (Message) event;
         logger.log(String.format("player: %s send message: %s", message.sender(), message.payload()));
+        System.out.println(String.format("player: %s send message: %s", message.sender(), message.payload()));
 
         Set<Subscriber> subscribers = this.subscribers.getSubscribers(event);
         dispatcher.dispatch(event, subscribers);
@@ -56,5 +57,9 @@ public class SimpleEventBus implements EventBus {
      */
     public void unregister(Object object) {
         subscribers.unregister(object);
+    }
+
+    public boolean isEmpty() {
+        return this.subscribers.isEmpty();
     }
 }

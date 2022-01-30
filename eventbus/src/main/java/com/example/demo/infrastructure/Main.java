@@ -35,7 +35,7 @@ public class Main {
         Dispatcher broadcastDispatcher = new BroadcastDispatcher();
         EventBus bus = new SimpleEventBus(logger, broadcastDispatcher);
 
-        Player initiator = new Player("initiator", bus);
+        Player initiator = new Player("initiator", bus, true);
         Player receiver = new Player("khaled", bus);
 
         bus.register(initiator.getConversation());
@@ -48,19 +48,13 @@ public class Main {
         Dispatcher pollDispatcher = new PollDispatcher();
         SimpleEventBus bus = new SimpleEventBus(logger, pollDispatcher);
 
-        Player initiator = new Player("initiator", bus);
+        Player initiator = new Player("initiator", bus, true);
 
         bus.register(initiator.getConversation());
 
         initiator.startConversation("hi", initiator.getConversation());
-        while (true) {
 
-            try {
-                Thread.sleep(5000L);
-            } catch (InterruptedException ignored) {
-            }
-        }
-
+        startBus(bus);
     }
 
     public void runReceiver() {
@@ -70,13 +64,21 @@ public class Main {
         Player receiver = new Player("khaled", bus);
 
         bus.register(receiver.getConversation());
+
+        startBus(bus);
+    }
+
+    private void startBus(SimpleEventBus bus) {
         while (true) {
+            if (bus.isEmpty()) {
+                System.out.println("finalize the program gracefully");
+                System.exit(0);
+            }
 
             try {
-                Thread.sleep(5000L);
+                Thread.sleep(1000L);
             } catch (InterruptedException ignored) {
             }
         }
     }
-
 }

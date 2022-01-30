@@ -1,7 +1,6 @@
 package com.example.demo.domain;
 
 
-
 import com.example.demo.api.EventBus;
 
 import java.util.Objects;
@@ -14,6 +13,11 @@ public class Player {
     public Player(String name, EventBus bus) {
         this.name = name;
         this.conversation = new Conversation(name, bus);
+    }
+
+    public Player(String name, EventBus bus, boolean isInitiator) {
+        this.name = name;
+        this.conversation = new InitiatorConversation(name, bus);
     }
 
     public void startConversation(String startMessage, Conversation conversation) {

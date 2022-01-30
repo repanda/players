@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,7 +24,7 @@ class Subscribers {
     /**
      * Store all subscribers methods
      */
-    private final Map<Class<?>, Set<Subscriber>> subscribers = new ConcurrentHashMap<>();
+    private final Map<Class<?>, CopyOnWriteArraySet<Subscriber>> subscribers = new ConcurrentHashMap<>();
 
 
     /**
@@ -45,9 +46,10 @@ class Subscribers {
                         Stream.of(new Subscriber(method, object))
                 ).collect(Collectors.toSet());
 
-                this.subscribers.put(type, subscribers);
+                this.subscribers.get(type).add(new Subscriber(method, object));
+                //this.subscribers.put(type, );
             } else {
-                subscribers.put(type, Set.of(new Subscriber(method, object)));
+                subscribers.put(type, new CopyOnWriteArraySet<Subscriber>(Set.of(new Subscriber(method, object))));
             }
         }
     }
@@ -75,6 +77,7 @@ class Subscribers {
             }
             currentClass = currentClass.getSuperclass();
         }
+        System.out.println("Subscribers.unregister");
     }
 
     /**
@@ -106,5 +109,9 @@ class Subscribers {
         return subscribers.containsKey(event.getClass()) ?
                 unmodifiableSet(subscribers.get(clazz)) :
                 Set.of();
+    }
+
+    public boolean isEmpty() {
+        return subscribers.isEmpty();
     }
 }

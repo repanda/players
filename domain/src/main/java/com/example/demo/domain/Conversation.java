@@ -10,14 +10,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Conversation {
 
-    public static final int MAX_SENT_MESSAGES = 10;
-    public static final int MAX_RECEIVED_MESSAGES = 10;
+    protected static final int MAX_SENT_MESSAGES = 10;
 
-    private final AtomicInteger sentCounter = new AtomicInteger();
-    private final AtomicInteger receivedCounter = new AtomicInteger();
+    protected final AtomicInteger sentCounter = new AtomicInteger();
+    protected final AtomicInteger receivedCounter = new AtomicInteger();
 
-    public final String id;
-    private final EventBus bus;
+    protected final String id;
+    protected final EventBus bus;
 
     public Conversation(String name, EventBus bus) {
         this.id = name;
@@ -32,6 +31,7 @@ public class Conversation {
         if (this.id.equals(message.sender())) {
             return;
         }
+        System.out.println(String.format("## player: %s receive message from %s: %s", this.id, message.sender(), message.payload()));
         receivedCounter.incrementAndGet();
 
         try { // juste for demo purpose
@@ -44,14 +44,12 @@ public class Conversation {
 
     public void sendMessage(String content) {
 
-        int sentMessages = sentCounter.get();
-        if (sentMessages >= MAX_SENT_MESSAGES && receivedCounter.get() >= MAX_RECEIVED_MESSAGES) {
-//            bus.unregister(this);
-            return;
-        }
         String newMessage = content + "," + sentCounter.incrementAndGet();
-
         bus.post(new Message(id, newMessage));
+
+        if (sentCounter.get() >= MAX_SENT_MESSAGES) {
+            bus.unregister(this);
+        }
     }
 
     @Override
