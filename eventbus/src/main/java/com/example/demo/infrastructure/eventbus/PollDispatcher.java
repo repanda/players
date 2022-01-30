@@ -1,5 +1,7 @@
 package com.example.demo.infrastructure.eventbus;
 
+import com.example.demo.domain.Message;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;

@@ -1,11 +1,14 @@
 package com.example.demo;
 
 
-import com.example.demo.infrastructure.api.Logger;
+import com.example.demo.infrastructure.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * logger for tests
+ */
 class FakeLogger implements Logger {
 
     private final List<String> logs = new ArrayList<>();

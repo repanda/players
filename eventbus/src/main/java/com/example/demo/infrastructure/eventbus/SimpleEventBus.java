@@ -1,6 +1,9 @@
 package com.example.demo.infrastructure.eventbus;
 
-import com.example.demo.infrastructure.api.Logger;
+
+import com.example.demo.api.EventBus;
+import com.example.demo.infrastructure.logger.Logger;
+import com.example.demo.domain.Message;
 
 import java.util.Set;
 
@@ -8,7 +11,7 @@ import java.util.Set;
  * EventBus allows publish-subscribe communication between components.
  * It requires components to explicitly register to the bus using {@link #register(Object)} method.
  */
-public class EventBus {
+public class SimpleEventBus implements EventBus {
 
     private final Logger logger;
     private final Subscribers subscribers = new Subscribers();
@@ -17,7 +20,7 @@ public class EventBus {
     /**
      * Creates a new EventBus instance.
      */
-    public EventBus(Logger logger, Dispatcher dispatcher) {
+    public SimpleEventBus(Logger logger, Dispatcher dispatcher) {
         this.logger = logger;
 
         this.dispatcher = dispatcher;

@@ -1,4 +1,4 @@
-package com.example.demo.infrastructure.eventbus;
+package com.example.demo.domain;
 
 /**
  * Object describing a message event,

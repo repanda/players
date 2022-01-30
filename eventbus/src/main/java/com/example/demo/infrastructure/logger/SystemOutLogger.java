@@ -1,8 +1,9 @@
 package com.example.demo.infrastructure.logger;
 
 
-import com.example.demo.infrastructure.api.Logger;
-
+/**
+ * console logger
+ */
 public class SystemOutLogger implements Logger {
     @Override
     public void log(String msg) {

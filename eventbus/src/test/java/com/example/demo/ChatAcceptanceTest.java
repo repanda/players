@@ -1,8 +1,6 @@
 package com.example.demo;
 
 import com.example.demo.infrastructure.Main;
-import com.example.demo.infrastructure.api.Logger;
-import com.example.demo.infrastructure.logger.SystemOutLogger;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,21 +39,5 @@ class ChatAcceptanceTest {
                                 player: khaled send message: hi,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10
                                                                                                 """
                 );
-    }
-
-    @Test
-    public void init() {
-        Logger logger = new SystemOutLogger();
-        Main console = new Main(logger, true);
-
-        console.runInitiator();
-    }
-
-    @Test
-    public void receiver() {
-        Logger logger = new SystemOutLogger();
-        Main console = new Main(logger, true);
-
-        console.runReceiver();
     }
 }

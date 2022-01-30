@@ -1,10 +1,13 @@
 package com.example.demo.infrastructure;
 
+
+import com.example.demo.api.EventBus;
 import com.example.demo.domain.Player;
-import com.example.demo.infrastructure.api.Logger;
 import com.example.demo.infrastructure.eventbus.BroadcastDispatcher;
-import com.example.demo.infrastructure.eventbus.EventBus;
+import com.example.demo.infrastructure.eventbus.Dispatcher;
 import com.example.demo.infrastructure.eventbus.PollDispatcher;
+import com.example.demo.infrastructure.eventbus.SimpleEventBus;
+import com.example.demo.infrastructure.logger.Logger;
 import com.example.demo.infrastructure.logger.SystemOutLogger;
 
 /**
@@ -29,7 +32,8 @@ public class Main {
     }
 
     public void run() {
-        EventBus bus = new EventBus(logger, new BroadcastDispatcher());
+        Dispatcher broadcastDispatcher = new BroadcastDispatcher();
+        EventBus bus = new SimpleEventBus(logger, broadcastDispatcher);
 
         Player initiator = new Player("initiator", bus);
         Player receiver = new Player("khaled", bus);
@@ -41,7 +45,8 @@ public class Main {
     }
 
     public void runInitiator() {
-        EventBus bus = new EventBus(logger, new PollDispatcher());
+        Dispatcher pollDispatcher = new PollDispatcher();
+        SimpleEventBus bus = new SimpleEventBus(logger, pollDispatcher);
 
         Player initiator = new Player("initiator", bus);
 
@@ -59,7 +64,8 @@ public class Main {
     }
 
     public void runReceiver() {
-        EventBus bus = new EventBus(logger, new PollDispatcher());
+        PollDispatcher pollDispatcher = new PollDispatcher();
+        SimpleEventBus bus = new SimpleEventBus(logger, pollDispatcher);
 
         Player receiver = new Player("khaled", bus);
 

@@ -1,7 +1,8 @@
 package com.example.demo.domain;
 
 
-import com.example.demo.infrastructure.eventbus.EventBus;
+
+import com.example.demo.api.EventBus;
 
 import java.util.Objects;
 

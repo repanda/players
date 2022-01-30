@@ -15,19 +15,19 @@
     <name>core</name>
     <description>domain</description>
     <properties>
-        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>${java.version}</source>
                 </configuration>
             </plugin>
 
@@ -43,7 +43,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.example.demo.Main</mainClass>
+                                    <mainClass>com.example.demo.infrastructure.Main</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
@@ -57,33 +57,4 @@
         </plugins>
     </build>
 
-    <dependencies>
-
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.8.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
-            <version>1.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.21.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>eventbus</artifactId>
-            <version>0.0.2</version>
-            <scope>compile</scope>
-        </dependency>
-
-    </dependencies>
 </project>

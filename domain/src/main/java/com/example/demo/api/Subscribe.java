@@ -1,4 +1,4 @@
-package com.example.demo.infrastructure.eventbus;
+package com.example.demo.api;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

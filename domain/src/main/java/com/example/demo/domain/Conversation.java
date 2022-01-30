@@ -1,8 +1,8 @@
 package com.example.demo.domain;
 
-import com.example.demo.infrastructure.eventbus.EventBus;
-import com.example.demo.infrastructure.eventbus.Message;
-import com.example.demo.infrastructure.eventbus.Subscribe;
+
+import com.example.demo.api.EventBus;
+import com.example.demo.api.Subscribe;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,7 +35,7 @@ public class Conversation {
         receivedCounter.incrementAndGet();
 
         try { // juste for demo purpose
-            Thread.sleep(100L);
+            Thread.sleep(1L);
         } catch (InterruptedException ignored) {
         }
 
